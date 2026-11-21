@@ -1,5 +1,5 @@
 // ===== Brandaholic Staff App — Service Worker (makes the app installable) =====
-const CACHE = 'brandaholic-v2';
+const CACHE = 'brandaholic-v3';
 const FILES = ['./', './index.html', './logo.png', './icon-192.png', './icon-512.png', './manifest.json'];
 
 self.addEventListener('install', e => {
