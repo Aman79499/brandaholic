@@ -26,8 +26,8 @@ textarea{min-height:64px;resize:vertical;margin-top:8px}
 .big{font-size:22px;font-weight:700;margin:10px 0}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .login{max-width:420px;margin:0 auto;padding-top:40px}
-.logo{display:block;width:140px;height:140px;margin:0 auto 12px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
-.toplogo{width:38px;height:38px;border-radius:50%;object-fit:cover;margin-right:10px;border:1px solid var(--gold)}
+.logo{display:block;width:200px;max-width:70%;height:auto;margin:0 auto 12px}
+.toplogo{height:40px;width:auto;margin-right:10px}
 .brand{text-align:center;font-size:30px;font-weight:800;letter-spacing:3px;color:var(--gold);text-transform:uppercase}
 .sub{text-align:center;color:var(--mut);margin-bottom:20px}
 .seg{display:flex;margin:0 12px;background:#1d1d1d;border-radius:12px;padding:4px}
@@ -103,7 +103,7 @@ textarea{min-height:64px;resize:vertical;margin-top:8px}
 
 <script>
 // ==================== [ANCHOR: CONFIG] ====================
-const API_URL = 'https://script.google.com/macros/s/AKfycbw-FCmAqaNnet-jlLpJTzNIxgYDV-zp4G6tU3QjWAfdF9rpE9UUhPXrklz3tHnksuKcaQ/exec';
+const API_URL = 'PASTE_YOUR_WEB_APP_EXEC_URL_HERE';
 
 // ==================== [ANCHOR: STATE & UTILS] ====================
 const S = { token: null, user: null, store: 'Brandaholic', loginMode: 'STAFF', tab: null };
@@ -172,6 +172,8 @@ function renderLogin() {
         onkeydown="if(event.key==='Enter')doLogin()">
       <button class="btn gold" onclick="doLogin()">Login</button>
     </div>
+    <button id="installBtn" class="btn" style="display:${installEvt ? 'block' : 'none'};margin:0 12px;width:calc(100% - 24px)"
+      onclick="installApp()">📲 Install App on this phone</button>
   </div>`;
 }
 function setMode(m) { S.loginMode = m; renderLogin(); }
@@ -480,6 +482,21 @@ function camUI(mode) {
   $('#camPreview').style.display = live ? 'none' : 'block';
   $('#camLiveBtns').style.display = live ? 'flex' : 'none';
   $('#camPrevBtns').style.display = live ? 'none' : 'flex';
+}
+
+// ==================== [ANCHOR: INSTALL APP] ====================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(e => console.log('SW error', e)));
+}
+let installEvt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); installEvt = e;
+  const b = document.getElementById('installBtn'); if (b) b.style.display = 'block';
+});
+async function installApp() {
+  if (!installEvt) return toast('Use Chrome menu ⋮ → "Install app" / "Add to Home screen"');
+  installEvt.prompt(); await installEvt.userChoice; installEvt = null;
+  const b = document.getElementById('installBtn'); if (b) b.style.display = 'none';
 }
 
 // ==================== [ANCHOR: START] ====================
