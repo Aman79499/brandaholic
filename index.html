@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#0d0d0d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Brandaholic Staff App</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--gold:#E0A82E;--bg:#0d0d0d;--card:#181818;--line:#2c2c2c;--txt:#f2f2f2;--mut:#9a9a9a;--ok:#2ecc71;--bad:#e74c3c;--warn:#f39c12;--blue:#3498db}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:76px;font-size:15px}
+h3{font-size:16px;margin-bottom:8px;color:var(--gold)}
+label{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:#0f0f0f;color:var(--txt);font-size:15px}
+textarea{min-height:64px;resize:vertical;margin-top:8px}
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:10px;background:#2a2a2a;color:var(--txt);font-size:15px;font-weight:600;margin-top:10px;cursor:pointer}
+.btn.gold{background:var(--gold);color:#111}.btn.ok{background:var(--ok);color:#111}.btn.bad{background:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px}
+.mut{color:var(--mut);font-size:13px;margin-top:4px}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+.big{font-size:22px;font-weight:700;margin:10px 0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.login{max-width:420px;margin:0 auto;padding-top:40px}
+.logo{display:block;width:140px;height:140px;margin:0 auto 12px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
+.toplogo{width:38px;height:38px;border-radius:50%;object-fit:cover;margin-right:10px;border:1px solid var(--gold)}
+.brand{text-align:center;font-size:30px;font-weight:800;letter-spacing:3px;color:var(--gold);text-transform:uppercase}
+.sub{text-align:center;color:var(--mut);margin-bottom:20px}
+.seg{display:flex;margin:0 12px;background:#1d1d1d;border-radius:12px;padding:4px}
+.seg button{flex:1;padding:11px;border:none;background:none;color:var(--mut);font-weight:700;border-radius:9px;font-size:14px}
+.seg button.on{background:var(--gold);color:#111}
+.hint{font-size:13px;color:var(--mut)}
+.top{position:sticky;top:0;z-index:5;background:#000;border-bottom:1px solid var(--line);padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+.top .t1{font-weight:800;color:var(--gold);letter-spacing:1px}.top .t2{font-size:12px;color:var(--mut)}
+.top button{background:none;border:1px solid var(--line);color:var(--txt);padding:7px 11px;border-radius:8px}
+.nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#000;border-top:1px solid var(--line);z-index:5}
+.nav button{flex:1;padding:10px 2px 12px;background:none;border:none;color:var(--mut);font-size:11px;font-weight:600}
+.nav button b{display:block;font-size:19px;margin-bottom:2px}
+.nav button.on{color:var(--gold)}
+.ph{position:relative;display:block;border-radius:10px;overflow:hidden;background:#000;aspect-ratio:3/4;border:1px solid var(--line)}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph span{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);font-size:11px;padding:4px 6px;color:var(--gold)}
+.ph.empty{display:flex;align-items:center;justify-content:center;color:var(--mut);text-align:center}
+.ph.empty span{position:static;background:none;color:var(--mut)}
+.th{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.badge{font-size:11px;font-weight:700;padding:4px 8px;border-radius:20px;white-space:nowrap}
+.s-ASSIGNED{background:#34495e}.s-IN_PROGRESS{background:var(--blue)}.s-DONE{background:var(--warn);color:#111}
+.s-APPROVED{background:var(--ok);color:#111}.s-REDO{background:var(--bad)}
+.task.pr-Urgent{border-left:4px solid var(--bad)}.task.pr-High{border-left:4px solid var(--warn)}
+.det{margin-top:8px;font-size:14px;white-space:pre-wrap}
+.redo{margin-top:8px;padding:8px;border-radius:8px;background:rgba(231,76,60,.15);color:#ff8a80;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:22px}
+.list-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.empty-msg{text-align:center;color:var(--mut);padding:30px 10px}
+.filters{display:flex;gap:8px;margin:12px}
+#load{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;flex-direction:column;gap:12px}
+#load.show{display:flex}
+.spin{width:42px;height:42px;border:4px solid #333;border-top-color:var(--gold);border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#toast{position:fixed;left:12px;right:12px;bottom:90px;padding:13px;border-radius:10px;background:#333;z-index:60;display:none;font-weight:600;text-align:center}
+#toast.ok{background:var(--ok);color:#111}#toast.bad{background:var(--bad)}
+.cam{position:fixed;inset:0;background:#000;z-index:40;display:none;flex-direction:column}
+.cam.show{display:flex}
+.camtop{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;color:var(--gold);font-weight:700}
+.camtop button{background:none;border:none;color:#fff;font-size:22px}
+.cam video,.cam img{flex:1;width:100%;min-height:0;object-fit:contain;background:#000}
+.cam video.mirror{transform:scaleX(-1)}
+.cambtns{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:14px 16px 24px}
+.cambtns .btn{width:auto;flex:1;margin:0}
+.shutter{width:74px;height:74px;border-radius:50%;border:5px solid #fff;background:var(--gold);flex:none}
+.livetag{position:absolute;top:56px;left:14px;background:var(--bad);color:#fff;font-size:11px;font-weight:800;padding:3px 8px;border-radius:5px}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<!-- ===== [ANCHOR: CAMERA MODAL] — live camera only, no gallery ===== -->
+<div id="cam" class="cam">
+  <div class="camtop"><span id="camTitle">Camera</span><button onclick="closeCam(null)">✕</button></div>
+  <span class="livetag" id="liveTag">● LIVE</span>
+  <video id="camVideo" playsinline muted autoplay></video>
+  <img id="camPreview" alt="">
+  <div id="camLiveBtns" class="cambtns">
+    <button class="btn" onclick="flipCam()">🔄 Flip</button>
+    <button class="shutter" onclick="snap()" aria-label="Capture"></button>
+    <button class="btn" onclick="closeCam(null)">Cancel</button>
+  </div>
+  <div id="camPrevBtns" class="cambtns">
+    <button class="btn" onclick="retake()">↺ Retake</button>
+    <button class="btn gold" onclick="usePhoto()">✔ Use Photo</button>
+  </div>
+</div>
+
+<div id="load"><div class="spin"></div><div id="loadTxt">Please wait…</div></div>
+<div id="toast"></div>
+
+<script>
+// ==================== [ANCHOR: CONFIG] ====================
+const API_URL = 'PASTE_YOUR_WEB_APP_EXEC_URL_HERE';
+
+// ==================== [ANCHOR: STATE & UTILS] ====================
+const S = { token: null, user: null, store: 'Brandaholic', loginMode: 'STAFF', tab: null };
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const todayIST = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+const STATUS = { ASSIGNED: 'Assigned', IN_PROGRESS: 'In Progress', DONE: 'Awaiting Review', APPROVED: 'Approved', REDO: 'Redo' };
+
+function save(k, v) { try { v === undefined ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+
+let loadCount = 0;
+function showLoad(on, txt) {
+  loadCount = Math.max(0, loadCount + (on ? 1 : -1));
+  if (on && txt) $('#loadTxt').textContent = txt;
+  if (!loadCount) $('#loadTxt').textContent = 'Please wait…';
+  $('#load').classList.toggle('show', loadCount > 0);
+}
+let toastT;
+function toast(msg, type) {
+  const t = $('#toast'); t.textContent = msg; t.className = type || ''; t.style.display = 'block';
+  clearTimeout(toastT); toastT = setTimeout(() => t.style.display = 'none', 3800);
+}
+
+async function api(action, payload = {}) {
+  showLoad(true);
+  try {
+    const r = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action, payload, token: S.token })
+    });
+    const j = await r.json();
+    if (!j.ok) {
+      if (j.error === 'SESSION_EXPIRED') { logout(true); throw new Error('Session expired. Please log in again.'); }
+      throw new Error(j.error);
+    }
+    return j.data;
+  } catch (e) {
+    if (e.name === 'TypeError') throw new Error('Network error. Check internet and try again.');
+    throw e;
+  } finally { showLoad(false); }
+}
+
+function photoBox(id, label) {
+  if (!id) return `<div class="ph empty"><span>${esc(label)}<br>—</span></div>`;
+  return `<a class="ph" href="https://drive.google.com/file/d/${id}/view" target="_blank">
+    <img src="https://drive.google.com/thumbnail?id=${id}&sz=w600" loading="lazy" alt=""><span>${esc(label)}</span></a>`;
+}
+
+// ==================== [ANCHOR: LOGIN] ====================
+function renderLogin() {
+  $('#app').innerHTML = `
+  <div class="login">
+    <img class="logo" src="logo.png" alt="" onerror="this.style.display='none'">
+    <div class="brand">${esc(S.store)}</div>
+    <div class="sub">Staff &amp; Work App</div>
+    <div class="seg">
+      <button class="${S.loginMode === 'STAFF' ? 'on' : ''}" onclick="setMode('STAFF')">👤 Staff Login</button>
+      <button class="${S.loginMode === 'MANAGER' ? 'on' : ''}" onclick="setMode('MANAGER')">🧑‍💼 Manager Login</button>
+    </div>
+    <div class="card">
+      <div class="hint">${S.loginMode === 'STAFF' ? 'For attendance and your assigned work' : 'For assigning work, review and reports'}</div>
+      <label>User ID</label><input id="uid" autocapitalize="characters" placeholder="e.g. S001">
+      <label>PIN</label><input id="pin" type="password" inputmode="numeric" placeholder="••••"
+        onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn gold" onclick="doLogin()">Login</button>
+    </div>
+  </div>`;
+}
+function setMode(m) { S.loginMode = m; renderLogin(); }
+
+async function doLogin() {
+  const userId = $('#uid').value.trim(), pin = $('#pin').value.trim();
+  if (!userId || !pin) return toast('Enter User ID and PIN', 'bad');
+  try {
+    const d = await api('login', { userId, pin, mode: S.loginMode });
+    S.token = d.token; S.user = d.user; S.store = d.storeName;
+    save('ssa_token', S.token); save('ssa_user', S.user); save('ssa_store', S.store);
+    renderHome();
+  } catch (e) { toast(e.message, 'bad'); }
+}
+
+function logout(silent) {
+  if (!silent && S.token) api('logout').catch(() => {});
+  S.token = null; S.user = null;
+  save('ssa_token'); save('ssa_user');
+  renderLogin();
+}
+
+// ==================== [ANCHOR: HOME & NAV] ====================
+const TABS = {
+  STAFF: [['att', '🕘', 'Attendance'], ['tasks', '🧹', 'My Work'], ['hist', '📅', 'History']],
+  MANAGER: [['assign', '➕', 'Assign'], ['review', '✅', 'Review'], ['all', '📋', 'All Work'], ['attrep', '🕘', 'Attendance'], ['set', '⚙️', 'Settings']]
+};
+
+function renderHome() {
+  const tabs = TABS[S.user.mode];
+  $('#app').innerHTML = `
+    <div class="top">
+      <div style="display:flex;align-items:center"><img class="toplogo" src="logo.png" alt="" onerror="this.style.display='none'">
+      <div><div class="t1">${esc(S.store)}</div>
+      <div class="t2">${esc(S.user.name)} · ${S.user.mode === 'MANAGER' ? 'Manager' : 'Staff'}</div></div></div>
+      <button onclick="logout()">Logout</button>
+    </div>
+    <div id="view"></div>
+    <div class="nav">${tabs.map(t => `<button id="nav_${t[0]}" onclick="showTab('${t[0]}')"><b>${t[1]}</b>${t[2]}</button>`).join('')}</div>`;
+  showTab(tabs[0][0]);
+}
+
+async function showTab(tab) {
+  S.tab = tab;
+  document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('on', b.id === 'nav_' + tab));
+  $('#view').innerHTML = '';
+  const fn = { att: tabAtt, tasks: tabTasks, hist: tabHist, assign: tabAssign, review: tabReview, all: tabAll, attrep: tabAttRep, set: tabSet }[tab];
+  try { await fn(); } catch (e) { $('#view').innerHTML = `<div class="empty-msg">${esc(e.message)}</div>`; }
+}
+
+// ==================== [ANCHOR: STAFF — ATTENDANCE] ====================
+async function tabAtt() {
+  const d = await api('attStatus');
+  const r = d.rec;
+  let h = `<div class="card"><h3>Today · ${esc(d.today)}</h3><div class="mut">Shift starts at ${esc(d.shiftStart)}</div>`;
+  if (!r) {
+    h += `<div class="big bad">Not checked in</div>
+          <button class="btn gold" onclick="doCheck('IN')">📷 Check In (live selfie)</button>`;
+  } else {
+    h += `<div class="big ${r.status.startsWith('Late') ? 'warn' : 'ok'}">${esc(r.status)}</div>
+          <div class="row2">${photoBox(r.inPhoto, 'IN ' + r.inTime)}${photoBox(r.outPhoto, r.outTime ? 'OUT ' + r.outTime : 'OUT')}</div>`;
+    h += r.outTime
+      ? `<div class="big ok">Day complete · ${esc(r.hours)}</div>`
+      : `<button class="btn gold" onclick="doCheck('OUT')">📷 Check Out (live selfie)</button>`;
+  }
+  h += `<div class="mut" style="margin-top:12px">Attendance works only inside the store. Keep GPS ON.</div></div>`;
+  $('#view').innerHTML = h;
+}
+
+async function doCheck(type) {
+  let pos;
+  try { pos = await getPos(true); } catch (e) { return toast(e.message, 'bad'); }
+  const shot = await openCamera({ title: type === 'IN' ? 'Check-In Selfie' : 'Check-Out Selfie', facing: 'user', label: type === 'IN' ? 'CHECK-IN' : 'CHECK-OUT', pos });
+  if (!shot) return;
+  try {
+    await api(type === 'IN' ? 'checkIn' : 'checkOut', { ...shot, lat: pos.lat, lng: pos.lng, acc: pos.acc });
+    toast(type === 'IN' ? 'Checked in ✔' : 'Checked out ✔', 'ok');
+    showTab('att');
+  } catch (e) { toast(e.message, 'bad'); }
+}
+
+async function tabHist() {
+  const list = await api('myAttendance');
+  $('#view').innerHTML = `<div class="card"><h3>My Attendance (last 31 days)</h3>${list.length ? list.map(r => `
+    <div class="list-row"><div><b>${esc(r.date)}</b><div class="mut">In ${esc(r.inTime || '-')} · Out ${esc(r.outTime || '-')}</div></div>
+    <div style="text-align:right"><span class="${r.status.startsWith('Late') ? 'warn' : 'ok'}">${esc(r.status)}</span><div class="mut">${esc(r.hours || '')}</div></div></div>`).join('')
+    : '<div class="empty-msg">No attendance yet</div>'}</div>`;
+}
+
+// ==================== [ANCHOR: STAFF — MY WORK] ====================
+async function tabTasks() {
+  const list = await api('myTasks');
+  const open = list.filter(t => t.status !== 'APPROVED'), done = list.filter(t => t.status === 'APPROVED');
+  $('#view').innerHTML =
+    (open.length ? open.map(t => taskCard(t, 'staff')).join('') : '<div class="empty-msg">🎉 No pending work</div>') +
+    (done.length ? `<div class="mut" style="margin:16px 14px 0">Recently approved</div>` + done.map(t => taskCard(t, 'staff')).join('') : '');
+}
+
+function taskCard(t, view) {
+  let act = '';
+  if (view === 'staff') {
+    if (t.status === 'ASSIGNED') act = `<button class="btn gold" onclick="taskPhoto('${t.id}','BEFORE')">📷 Take BEFORE photo &amp; Start</button>`;
+    else if (t.status === 'IN_PROGRESS' || t.status === 'REDO')
+      act = `<textarea id="rm_${t.id}" placeholder="Remark (optional)"></textarea>
+             <button class="btn gold" onclick="taskPhoto('${t.id}','AFTER')">📷 Take AFTER photo &amp; Complete</button>`;
+    else if (t.status === 'DONE') act = `<div class="mut">⏳ Waiting for manager review</div>`;
+  }
+  if (view === 'review') {
+    act = `<textarea id="rv_${t.id}" placeholder="Review remark (required for Redo)"></textarea>
+      <div class="row2"><button class="btn ok" onclick="review('${t.id}','APPROVE')">✔ Approve</button>
+      <button class="btn bad" onclick="review('${t.id}','REDO')">↺ Redo</button></div>`;
+  }
+  const showPhotos = t.before || t.after || view === 'review';
+  return `<div class="card task pr-${esc(t.priority)}">
+    <div class="th"><b>${esc(t.title)}</b><span class="badge s-${esc(t.status)}">${STATUS[t.status] || esc(t.status)}</span></div>
+    <div class="mut">${esc(t.id)}${view !== 'staff' ? ' · To: ' + esc(t.to) : ''} · Due: ${esc(t.due || '-')} · ${esc(t.priority)}</div>
+    ${t.details ? `<div class="det">${esc(t.details)}</div>` : ''}
+    ${t.status === 'REDO' && t.reviewRemark ? `<div class="redo">↺ Redo: ${esc(t.reviewRemark)}</div>` : ''}
+    ${showPhotos ? `<div class="row2">${photoBox(t.before, 'BEFORE ' + (t.beforeTime || ''))}${photoBox(t.after, 'AFTER ' + (t.afterTime || ''))}</div>` : ''}
+    ${t.staffRemark ? `<div class="mut">Staff remark: ${esc(t.staffRemark)}</div>` : ''}
+    ${t.status === 'APPROVED' ? `<div class="mut ok">Approved by ${esc(t.reviewedBy)} · ${esc(t.reviewedAt)}${t.reviewRemark ? ' · ' + esc(t.reviewRemark) : ''}</div>` : ''}
+    ${act}
+  </div>`;
+}
+
+async function taskPhoto(id, kind) {
+  const remark = kind === 'AFTER' ? ($('#rm_' + id)?.value || '') : '';
+  const pos = await getPos(false);
+  const shot = await openCamera({ title: `${kind} photo · ${id}`, facing: 'environment', label: `${kind} · ${id}`, pos });
+  if (!shot) return;
+  try {
+    await api(kind === 'BEFORE' ? 'startTask' : 'completeTask', { taskId: id, ...shot, lat: pos?.lat, lng: pos?.lng, remark });
+    toast(kind === 'BEFORE' ? 'Work started ✔' : 'Sent for review ✔', 'ok');
+    showTab('tasks');
+  } catch (e) { toast(e.message, 'bad'); }
+}
+
+// ==================== [ANCHOR: MANAGER — ASSIGN] ====================
+async function tabAssign() {
+  const staff = await api('staffList');
+  $('#view').innerHTML = `<div class="card"><h3>Assign New Work</h3>
+    <label>Assign to</label>
+    <select id="a_to"><option value="">— Select staff —</option>${staff.map(s => `<option value="${esc(s.id)}">${esc(s.name)} (${esc(s.id)})</option>`).join('')}</select>
+    <label>Work title</label><input id="a_title" placeholder="e.g. Clean trial room &amp; arrange hangers">
+    <label>Details</label><textarea id="a_det" placeholder="What exactly needs to be done"></textarea>
+    <div class="row2">
+      <div><label>Priority</label><select id="a_pr"><option>Normal</option><option>High</option><option>Urgent</option><option>Low</option></select></div>
+      <div><label>Due</label><input id="a_due" type="datetime-local"></div>
+    </div>
+    <button class="btn gold" onclick="assignTask()">Assign Work</button></div>`;
+}
+
+async function assignTask() {
+  const p = { assignTo: $('#a_to').value, title: $('#a_title').value.trim(), details: $('#a_det').value.trim(), priority: $('#a_pr').value, due: $('#a_due').value };
+  if (!p.assignTo) return toast('Select a staff member', 'bad');
+  if (!p.title) return toast('Enter the work title', 'bad');
+  try { const d = await api('createTask', p); toast(`Work ${d.id} assigned ✔`, 'ok'); tabAssign(); }
+  catch (e) { toast(e.message, 'bad'); }
+}
+
+// ==================== [ANCHOR: MANAGER — REVIEW & ALL WORK] ====================
+async function tabReview() {
+  const list = await api('allTasks', { status: 'DONE' });
+  $('#view').innerHTML = list.length ? list.map(t => taskCard(t, 'review')).join('') : '<div class="empty-msg">Nothing waiting for review 👍</div>';
+}
+
+async function review(id, decision) {
+  const remark = $('#rv_' + id).value.trim();
+  if (decision === 'REDO' && !remark) return toast('Write what needs to be redone', 'bad');
+  try { await api('reviewTask', { taskId: id, decision, remark }); toast(decision === 'APPROVE' ? 'Approved ✔' : 'Sent back for redo', 'ok'); tabReview(); }
+  catch (e) { toast(e.message, 'bad'); }
+}
+
+let staffCache = [];
+async function tabAll() {
+  if (!staffCache.length) staffCache = await api('staffList');
+  $('#view').innerHTML = `<div class="filters">
+      <select id="f_st" onchange="loadAll()"><option value="">All status</option>${Object.keys(STATUS).map(k => `<option value="${k}">${STATUS[k]}</option>`).join('')}</select>
+      <select id="f_sf" onchange="loadAll()"><option value="">All staff</option>${staffCache.map(s => `<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('')}</select>
+    </div><div id="allList"></div>`;
+  loadAll();
+}
+async function loadAll() {
+  try {
+    const list = await api('allTasks', { status: $('#f_st').value, staff: $('#f_sf').value });
+    $('#allList').innerHTML = list.length ? list.map(t => taskCard(t, 'all')).join('') : '<div class="empty-msg">No work found</div>';
+  } catch (e) { toast(e.message, 'bad'); }
+}
+
+// ==================== [ANCHOR: MANAGER — ATTENDANCE REPORT] ====================
+async function tabAttRep() {
+  $('#view').innerHTML = `<div class="filters"><input type="date" id="r_date" value="${todayIST()}" onchange="loadAttRep()"></div><div id="repBox"></div>`;
+  loadAttRep();
+}
+async function loadAttRep() {
+  try {
+    const d = await api('attReport', { date: $('#r_date').value });
+    const P = d.rows.filter(r => r.status === 'Present').length, L = d.rows.filter(r => r.status.startsWith('Late')).length, A = d.rows.filter(r => r.status === 'Absent').length;
+    $('#repBox').innerHTML = `<div class="stats">
+        <div class="stat"><b class="ok">${P}</b>On time</div><div class="stat"><b class="warn">${L}</b>Late</div><div class="stat"><b class="bad">${A}</b>Absent</div></div>` +
+      d.rows.map(r => `<div class="card"><div class="th"><b>${esc(r.name)}</b>
+        <span class="${r.status === 'Absent' ? 'bad' : r.status.startsWith('Late') ? 'warn' : 'ok'}">${esc(r.status)}</span></div>
+        ${r.status === 'Absent' ? '' : `<div class="mut">In ${esc(r.inTime)} (${esc(r.inDist || '?')} m) · Out ${esc(r.outTime || '-')} ${r.outDist ? '(' + esc(r.outDist) + ' m)' : ''} · ${esc(r.hours || '')}</div>
+        <div class="row2">${photoBox(r.inPhoto, 'IN ' + r.inTime)}${photoBox(r.outPhoto, r.outTime ? 'OUT ' + r.outTime : 'OUT')}</div>`}</div>`).join('');
+  } catch (e) { toast(e.message, 'bad'); }
+}
+
+// ==================== [ANCHOR: MANAGER — SETTINGS] ====================
+async function tabSet() {
+  const s = await api('getSettings');
+  const isOwner = S.user.role === 'OWNER';
+  $('#view').innerHTML = `<div class="card"><h3>Store Settings</h3>
+    <div class="list-row"><span>Store location</span><b>${s.STORE_LAT ? esc(s.STORE_LAT + ', ' + s.STORE_LNG) : '<span class="bad">Not set</span>'}</b></div>
+    <div class="list-row"><span>Allowed radius</span><b>${esc(s.RADIUS_M)} m</b></div>
+    <div class="list-row"><span>Shift start</span><b>${esc(s.SHIFT_START)}</b></div>
+    <div class="list-row"><span>Late after</span><b>${esc(s.LATE_GRACE_MIN)} min</b></div>
+    <div class="list-row"><span>GPS required</span><b>${esc(s.GPS_REQUIRED)}</b></div>
+    ${isOwner ? `<button class="btn gold" onclick="setLoc()">📍 Set store location = my current location</button>
+      <div class="mut">Stand inside the store when you press this.</div>` : '<div class="mut">Only the Owner can change the store location.</div>'}
+    <div class="mut" style="margin-top:10px">Staff, PINs, shift time and radius are edited in the Google Sheet (Users / Settings tabs).</div></div>`;
+}
+async function setLoc() {
+  try {
+    const p = await getPos(true);
+    if (!confirm(`Save this as the store location?\n${p.lat.toFixed(6)}, ${p.lng.toFixed(6)} (±${p.acc} m)`)) return;
+    await api('setStoreLocation', p); toast('Store location saved ✔', 'ok'); tabSet();
+  } catch (e) { toast(e.message, 'bad'); }
+}
+
+// ==================== [ANCHOR: GPS] ====================
+function getPos(required) {
+  return new Promise((res, rej) => {
+    if (!navigator.geolocation) return required ? rej(new Error('GPS is not supported on this phone')) : res(null);
+    showLoad(true, 'Getting location…');
+    navigator.geolocation.getCurrentPosition(
+      p => { showLoad(false); res({ lat: p.coords.latitude, lng: p.coords.longitude, acc: Math.round(p.coords.accuracy) }); },
+      () => { showLoad(false); required ? rej(new Error('Location is OFF or blocked. Turn ON GPS and allow location for this site.')) : res(null); },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+  });
+}
+
+// ==================== [ANCHOR: LIVE CAMERA] ====================
+let camStream = null, camFacing = 'user', camResolve = null, camOpts = null, camShot = null;
+
+async function openCamera(opts) {
+  camOpts = opts; camFacing = opts.facing || 'environment'; camShot = null;
+  $('#camTitle').textContent = opts.title;
+  $('#cam').classList.add('show');
+  camUI('live');
+  const p = new Promise(r => camResolve = r);
+  await startStream();
+  return p;
+}
+async function startStream() {
+  stopStream();
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: camFacing }, width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false });
+    const v = $('#camVideo'); v.srcObject = camStream; await v.play();
+    v.classList.toggle('mirror', camFacing === 'user');
+  } catch (e) {
+    toast('Camera not available. Allow camera permission for this site.', 'bad');
+    closeCam(null);
+  }
+}
+function stopStream() { if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; } }
+function flipCam() { camFacing = camFacing === 'user' ? 'environment' : 'user'; startStream(); }
+
+function snap() {
+  const v = $('#camVideo'); if (!v.videoWidth) return;
+  const sc = Math.min(1, 960 / v.videoWidth);
+  const w = Math.round(v.videoWidth * sc), h = Math.round(v.videoHeight * sc);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const x = c.getContext('2d');
+  if (camFacing === 'user') { x.translate(w, 0); x.scale(-1, 1); }
+  x.drawImage(v, 0, 0, w, h);
+  x.setTransform(1, 0, 0, 1, 0, 0);
+
+  // ---- Watermark stamped on the photo (name, time, GPS) ----
+  const ts = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true });
+  const p = camOpts.pos;
+  const lines = [
+    `${camOpts.label} · ${S.user.name} (${S.user.id})`,
+    ts + (p ? `  ·  GPS ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : ''),
+    `${S.store} · LIVE PHOTO`
+  ];
+  const fs = Math.max(14, Math.round(w / 38)), lh = fs * 1.35, pad = fs * 0.6;
+  const bh = lines.length * lh + pad;
+  x.fillStyle = 'rgba(0,0,0,.6)'; x.fillRect(0, h - bh, w, bh);
+  x.fillStyle = '#E0A82E'; x.font = `bold ${fs}px sans-serif`;
+  lines.forEach((l, i) => x.fillText(l, pad, h - bh + pad / 2 + lh * (i + 1) - fs * 0.3));
+
+  camShot = { photo: c.toDataURL('image/jpeg', 0.7), capturedAt: Date.now() };
+  $('#camPreview').src = camShot.photo;
+  stopStream(); camUI('preview');
+}
+function retake() { camShot = null; camUI('live'); startStream(); }
+function usePhoto() { closeCam(camShot); }
+function closeCam(val) {
+  stopStream(); $('#cam').classList.remove('show');
+  if (camResolve) { const r = camResolve; camResolve = null; r(val); }
+}
+function camUI(mode) {
+  const live = mode === 'live';
+  $('#camVideo').style.display = live ? 'block' : 'none';
+  $('#liveTag').style.display = live ? 'block' : 'none';
+  $('#camPreview').style.display = live ? 'none' : 'block';
+  $('#camLiveBtns').style.display = live ? 'flex' : 'none';
+  $('#camPrevBtns').style.display = live ? 'none' : 'flex';
+}
+
+// ==================== [ANCHOR: START] ====================
+(function init() {
+  S.token = load('ssa_token'); S.user = load('ssa_user'); S.store = load('ssa_store') || 'Brandaholic';
+  if (API_URL.indexOf('PASTE_') === 0) {
+    $('#app').innerHTML = '<div class="empty-msg">Set API_URL in index.html first (your Apps Script /exec link).</div>';
+    return;
+  }
+  if (S.token && S.user) renderHome(); else renderLogin();
+})();
+</script>
+</body>
+</html>
